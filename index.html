@@ -97,7 +97,25 @@ input {
     <div class="card">
         <h2>Explorar Modelo CORA</h2>
         <p>Conoce cómo funciona el sistema, aprende el modelo de disciplina financiera y descubre cómo aplicarlo en tu vida.</p>
-        <button class="btn" onclick="alert('La IA te guiará próximamente.')">Hablar con la IA</button>
+        <async function hablarIA() {
+  try {
+    const respuesta = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: "Explícame el modelo CORA"
+      })
+    });
+
+    const data = await respuesta.json();
+    alert(data.reply || "Sin respuesta");
+
+  } catch (error) {
+    alert("Error conectando con la IA");
+  }
+}
         <p class="link" onclick="goHome()">Volver</p>
     </div>
 </div>
