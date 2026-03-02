@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>CORA IA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      background: #111827;
+    }
+
+    #chat {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .msg {
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      max-width: 80%;
+    }
+
+    .user {
+      background: #2563eb;
+      align-self: flex-end;
+    }
+
+    .bot {
+      background: #1f2937;
+      align-self: flex-start;
+    }
+
+    #input-area {
+      display: flex;
+      padding: 10px;
+      background: #111827;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      margin-left: 10px;
+      padding: 10px 15px;
+      border: none;
+      background: #10b981;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  CORA – Asistente IA
+</header>
+
+<div id="chat"></div>
+
+<div id="input-area">
+  <input type="text" id="messageInput" placeholder="Escribe tu mensaje..." />
+  <button onclick="sendMessage()">Enviar</button>
+</div>
+
+<script>
+  const chat = document.getElementById("chat");
+
+  function addMessage(text, className) {
+    const div = document.createElement("div");
+    div.className = "msg " + className;
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById("messageInput");
+    const message = input.value.trim();
+
+    if (!message) return;
+
+    addMessage(message, "user");
+    input.value = "";
+
+    try {
+      const response = await fetch("/api/chats", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await response.json();
+
+      if (data.reply) {
+        addMessage(data.reply, "bot");
+      } else {
+        addMessage("Error en la respuesta del servidor.", "bot");
+      }
+
+    } catch (error) {
+      addMessage("Error de conexión con el servidor.", "bot");
+    }
+  }
+</script>
+
+</body>
+</html>
